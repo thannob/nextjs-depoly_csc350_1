@@ -41,3 +41,22 @@ export async function PUT(request){
         return NextResponse.json({error: error}, {status: 500})
     }
 }
+
+export async function DELETE(request) {
+    try {
+      const { id } = await request.json();
+      if (!id) {
+        return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+      }
+  
+      const [result] = await db.query("DELETE FROM attractions WHERE id = ?", [id]);
+      if (result.affectedRows === 0) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+  
+      return NextResponse.json({ message: "Deleted", id }, { status: 200 });
+    } catch (err) {
+      console.error("DELETE error:", err);
+      return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+    }
+  }
